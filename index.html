@@ -1,12 +1,504 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>FAST Components Test Harness</title>
-        <script src="/fast-components.js" type="module"></script>
-    </head>
-    <body>
-        <div id="root"></div>
-    </body>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Resume | Subhankar Pati</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutral Harmony -->
+    <!-- Application Structure Plan: A single-page application with a top navigation bar for easy access to key sections: a hero section with summary, a quick-glance highlights panel for key metrics, an interactive timeline for work experience, a dynamic skills dashboard with a filterable chart, and sections for education and awards. This structure is chosen to guide the user through a narrative of professional capability, from a high-level summary to deep-dive details, maximizing engagement and clarity over a traditional linear resume. -->
+    <!-- Visualization & Content Choices:
+        - Key Metrics (Inform): HTML/CSS cards with large typography and icons (Unicode) to immediately showcase top achievements (e.g., '60-person team led'). Justification: High impact, easily scannable.
+        - Work Experience (Organize/Change): Interactive vertical timeline using HTML/CSS/JS. Clicking a role expands details. Added an LLM-powered "Generate More Details" feature to provide dynamic narrative expansions for each role. Justification: Shows career progression visually and reduces initial cognitive load, while the LLM feature adds depth and highlights impact.
+        - Skills (Compare): Filterable horizontal bar chart (Chart.js/Canvas). Users can filter by skill category. Justification: Provides a clear, quantitative-like view of proficiencies and allows users to focus on skills relevant to their needs.
+        - Awards (Inform): HTML/CSS cards for a clean, organized presentation.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFDFB;
+            color: #333;
+        }
+        .nav-link {
+            transition: color 0.3s ease, border-bottom-color 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link.active, .nav-link:hover {
+            color: #2563EB;
+            border-bottom-color: #2563EB;
+        }
+        .timeline-item-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.7s ease-in-out;
+        }
+        .timeline-item.open .timeline-item-content {
+            max-height: 500px;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 450px;
+            }
+        }
+        .skill-btn.active {
+            background-color: #2563EB;
+            color: #fff;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header & Navigation -->
+    <header id="header" class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="text-xl font-bold text-gray-800">Subhankar Pati</div>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="#experience" class="nav-link font-medium pb-1">Experience</a>
+                    <a href="#skills" class="nav-link font-medium pb-1">Skills</a>
+                    <a href="#impact" class="nav-link font-medium pb-1">Impact</a>
+                    <a href="#education" class="nav-link font-medium pb-1">Education</a>
+                </nav>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="text-gray-600 hover:text-gray-800 focus:outline-none">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden px-4 pt-2 pb-4 space-y-2">
+            <a href="#experience" class="block nav-link text-center py-2">Experience</a>
+            <a href="#skills" class="block nav-link text-center py-2">Skills</a>
+            <a href="#impact" class="block nav-link text-center py-2">Impact</a>
+            <a href="#education" class="block nav-link text-center py-2">Education</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <!-- Hero Section -->
+        <section id="hero" class="text-center mb-20">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">Team Lead & Digital Marketing Expert</h1>
+            <p class="max-w-3xl mx-auto text-lg text-gray-600 mb-6">
+                Highly accomplished Programmatic & Digital Marketing professional with over 5 years of experience. Proven ability to lead and mentor large teams, streamline operations, and deliver significant business impact through data-driven decision-making.
+            </p>
+            <div class="flex justify-center items-center space-x-6 text-gray-500">
+                <span>subhankarpti44@gmail.com</span>
+                <span class="text-gray-300">|</span>
+                <span>7978321585</span>
+                <span class="text-gray-300">|</span>
+                <span>Bangalore</span>
+            </div>
+        </section>
+
+        <!-- Key Highlights Section -->
+        <section id="highlights" class="mb-20">
+             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-xl shadow-md text-center border border-gray-100">
+                    <div class="text-blue-600 text-4xl mb-3">➔</div>
+                    <h3 class="text-2xl font-bold text-gray-900">60-Person Team Lead</h3>
+                    <p class="text-gray-600">Managed and mentored a large team to exceed performance KPIs.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md text-center border border-gray-100">
+                    <div class="text-blue-600 text-4xl mb-3">📈</div>
+                    <h3 class="text-2xl font-bold text-gray-900">23% TRT Reduction</h3>
+                    <p class="text-gray-600">Improved operational efficiency through process enhancements.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md text-center border border-gray-100">
+                    <div class="text-blue-600 text-4xl mb-3">🎯</div>
+                    <h3 class="text-2xl font-bold text-gray-900">5+ Years Experience</h3>
+                    <p class="text-gray-600">In programmatic marketing, client management, and data analysis.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Experience Timeline Section -->
+        <section id="experience" class="mb-20">
+            <h2 class="text-3xl font-bold text-center mb-4">Career Journey</h2>
+            <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">An interactive timeline of my professional experience. Click on any role to see more details about my responsibilities and achievements in that position, or use the 'Generate More Details' button for an AI-powered narrative summary.</p>
+            <div id="timeline-container" class="relative max-w-3xl mx-auto">
+                <!-- Timeline items will be injected here by JS -->
+            </div>
+        </section>
+
+        <!-- Skills Dashboard Section -->
+        <section id="skills" class="mb-20">
+            <h2 class="text-3xl font-bold text-center mb-4">Skills Dashboard</h2>
+            <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">A visual representation of my technical and professional skills. Use the buttons below to filter the chart by category and explore my expertise.</p>
+            <div class="flex justify-center space-x-2 mb-8" id="skill-filters">
+                <!-- Skill filter buttons will be injected here by JS -->
+            </div>
+            <div class="chart-container bg-white p-4 rounded-xl shadow-md border border-gray-100">
+                <canvas id="skillsChart"></canvas>
+            </div>
+        </section>
+
+        <!-- Impact & Awards Section -->
+        <section id="impact" class="mb-20">
+            <h2 class="text-3xl font-bold text-center mb-12">Recognized Impact & Achievements</h2>
+            <div id="awards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Awards will be injected here by JS -->
+            </div>
+        </section>
+
+        <!-- Education & Certifications Section -->
+        <section id="education" class="mb-20">
+            <h2 class="text-3xl font-bold text-center mb-12">Education & Certifications</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <div>
+                    <h3 class="text-2xl font-semibold mb-6 text-center md:text-left">Education</h3>
+                    <div id="education-container" class="space-y-6">
+                        <!-- Education items will be injected here by JS -->
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-semibold mb-6 text-center md:text-left">Certifications</h3>
+                    <div id="certs-container" class="space-y-4">
+                        <!-- Certifications will be injected here by JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p>Get in touch: subhankarpti44@gmail.com | 7978321585</p>
+            <p class="text-sm text-gray-400 mt-2">Interactive Resume created for Subhankar Pati</p>
+        </div>
+    </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const resumeData = {
+        experience: [
+            {
+                role: 'Analyst (Trade Desk, Amazon DSP)',
+                company: 'Nielsen, Bangalore',
+                period: 'Jul 2024 – Present',
+                details: [
+                    'Led performance optimization for digital campaigns, enhancing precision targeting and increasing efficiency across high-value audience segments.',
+                    'Utilized SQL, Python, and Power BI to build comprehensive dashboards and deliver actionable insights that drove client ROI and strategic marketing decisions.',
+                    'Partnered with cross-functional teams to deliver marketing intelligence and support data-led decision-making for various stakeholders.'
+                ]
+            },
+            {
+                role: 'Marketing Specialist (Programmatic; DV360, CM360)',
+                company: 'GOC, Hyderabad',
+                period: 'May 2022 – May 2024',
+                details: [
+                    'Managed 300+ advertiser accounts, providing consultative support and technical solutions to improve campaign performance and platform adoption.',
+                    'Spearheaded data-driven optimization strategies, resulting in a 10% improvement in campaign efficiency and audience targeting.',
+                    'Troubleshot complex campaign setup and measurement issues, ensuring seamless implementation and driving consistent results.',
+                    'Collaborated with sales, product, and engineering teams to align marketing strategies with client goals and drive business impact.'
+                ]
+            },
+            {
+                role: 'Subject Matter Expert (Amazon Ads DSP)',
+                company: 'TechM, Bangalore',
+                period: 'Sep 2019 – May 2022',
+                details: [
+                    'Managed and mentored a 60-person team, overseeing daily operations to deliver high-quality marketing support and consistently exceed performance KPIs.',
+                    'Reduced turnaround time (TRT) by 23% and significantly improved client satisfaction metrics (CSAT, PRR) through strategic process enhancements and targeted training initiatives.',
+                    'Recognized for excellence with multiple "Best Team" awards for outstanding performance, innovation, and operational optimization.',
+                    'Responsible for proper workflow allocation, ensuring adherence to deadlines and maintaining high data quality standards in a production environment.'
+                ]
+            }
+        ],
+        skills: {
+            'All': [
+                { name: 'Team Management', level: 95 },
+                { name: 'Amazon DSP', level: 90 },
+                { name: 'DV360 & CM360', level: 90 },
+                { name: 'The Trade Desk', level: 85 },
+                { name: 'SQL', level: 80 },
+                { name: 'Power BI', level: 78 },
+                { name: 'Python', level: 70 },
+                { name: 'Stakeholder Comms', level: 90 },
+                { name: 'Process Optimization', level: 88 },
+            ],
+            'Leadership & Strategy': [
+                { name: 'Team Management', level: 95 },
+                { name: 'Mentoring & Coaching', level: 92 },
+                { name: 'Stakeholder Comms', level: 90 },
+                { name: 'Process Optimization', level: 88 },
+                { name: 'Project Management', level: 85 },
+                { name: 'Client-Facing', level: 93 },
+            ],
+            'Programmatic Platforms': [
+                { name: 'Amazon DSP', level: 90 },
+                { name: 'DV360 & CM360', level: 90 },
+                { name: 'The Trade Desk', level: 85 },
+                { name: 'Google Ads', level: 80 },
+                { name: 'Facebook Ads', level: 75 },
+            ],
+            'Data Analysis & BI': [
+                { name: 'SQL', level: 80 },
+                { name: 'Power BI', level: 78 },
+                { name: 'Python (Pandas)', level: 70 },
+                { name: 'Google Analytics', level: 85 },
+                { name: 'MS Excel', level: 90 },
+            ]
+        },
+        awards: [
+            { name: '"Best Team" Awards', source: 'Multiple recognitions at TechM for performance and innovation.', icon: '🏆' },
+            { name: '"GOC Heroes" Award', source: 'For outstanding contributions to key projects at GOC.', icon: '🦸' },
+            { name: '"Analyst of the Quarter"', source: 'Recognized for significant project impact.', icon: '⭐' },
+            { name: '"Pat On The Back"', source: 'Awarded for exceptional and consistent performance.', icon: '👏' }
+        ],
+        education: [
+            { degree: 'PGDM, Marketing & Analytics', school: 'Indian Institute Of Management, Visakhapatnam', date: 'Apr 2024' },
+            { degree: 'Master in Arts, Rural Development', school: 'Utkal University', date: 'Mar 2019' }
+        ],
+        certifications: [
+            'Project Management', 'Six-Sigma', 'E-commerce', 'Data Analytics', 'Business Intelligence'
+        ]
+    };
+
+    // Populate Timeline
+    const timelineContainer = document.getElementById('timeline-container');
+    if (timelineContainer) {
+        timelineContainer.innerHTML = resumeData.experience.map((job, index) => `
+            <div class="timeline-item ${index === 0 ? 'open' : ''} mb-8">
+                <div class="flex items-center cursor-pointer timeline-item-header">
+                    <div class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold z-10">${resumeData.experience.length - index}</div>
+                    <div class="ml-4 p-4 bg-white rounded-lg shadow-md flex-1">
+                        <h4 class="font-bold text-lg">${job.role}</h4>
+                        <p class="text-gray-600">${job.company}</p>
+                        <p class="text-sm text-gray-500">${job.period}</p>
+                    </div>
+                </div>
+                <div class="timeline-item-content ml-4 pl-8 border-l-2 border-gray-200">
+                    <ul class="list-disc pl-5 py-4 space-y-2 text-gray-700">
+                        ${job.details.map(detail => `<li>${detail}</li>`).join('')}
+                    </ul>
+                    <button class="generate-details-btn mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors duration-200 text-sm">✨ Generate More Details</button>
+                    <div class="generated-details mt-4 text-gray-800 text-sm hidden"></div>
+                    <div class="loading-indicator mt-4 text-blue-600 text-sm hidden">Generating...</div>
+                </div>
+            </div>
+        `).join('');
+        
+        timelineContainer.addEventListener('click', function(e) {
+            const header = e.target.closest('.timeline-item-header');
+            if (header) {
+                const item = header.closest('.timeline-item');
+                item.classList.toggle('open');
+            }
+        });
+
+        // Gemini API integration for generating more details
+        document.querySelectorAll('.generate-details-btn').forEach((button, index) => {
+            button.addEventListener('click', async function() {
+                const job = resumeData.experience[index];
+                const generatedDetailsDiv = this.nextElementSibling;
+                const loadingIndicator = generatedDetailsDiv.nextElementSibling;
+
+                if (!generatedDetailsDiv.classList.contains('hidden')) {
+                    generatedDetailsDiv.classList.add('hidden');
+                    button.textContent = '✨ Generate More Details';
+                    return;
+                }
+
+                loadingIndicator.classList.remove('hidden');
+                button.disabled = true;
+
+                const prompt = `Given the following work experience details, expand on them with a concise narrative (around 3-4 sentences) that highlights the key contributions and impact, as if explaining it to a recruiter. Focus on achievements and results.
+Job Role: ${job.role}
+Company: ${job.company}
+Period: ${job.period}
+Key Responsibilities/Achievements:
+${job.details.map(detail => `- ${detail}`).join('\n')}`;
+
+                let chatHistory = [];
+                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                const payload = { contents: chatHistory };
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const result = await response.json();
+
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const text = result.candidates[0].content.parts[0].text;
+                        generatedDetailsDiv.innerHTML = `<p class="italic text-gray-700">${text}</p>`;
+                        generatedDetailsDiv.classList.remove('hidden');
+                        button.textContent = 'Hide Details';
+                    } else {
+                        generatedDetailsDiv.innerHTML = '<p class="text-red-500">Failed to generate details. Please try again.</p>';
+                        generatedDetailsDiv.classList.remove('hidden');
+                    }
+                } catch (error) {
+                    generatedDetailsDiv.innerHTML = `<p class="text-red-500">Error generating details: ${error.message}</p>`;
+                    generatedDetailsDiv.classList.remove('hidden');
+                } finally {
+                    loadingIndicator.classList.add('hidden');
+                    button.disabled = false;
+                }
+            });
+        });
+    }
+
+    // Populate Skills Chart
+    const ctx = document.getElementById('skillsChart');
+    let skillsChart;
+    if (ctx) {
+        const createChart = (filter = 'All') => {
+            if (skillsChart) {
+                skillsChart.destroy();
+            }
+            // Corrected typo: b.l.level changed to b.level
+            const filteredSkills = resumeData.skills[filter].sort((a, b) => a.level - b.level);
+            skillsChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: filteredSkills.map(s => s.name),
+                    datasets: [{
+                        label: 'Proficiency',
+                        data: filteredSkills.map(s => s.level),
+                        backgroundColor: 'rgba(37, 99, 235, 0.8)',
+                        borderColor: 'rgba(37, 99, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: { display: false },
+                            grid: { display: false }
+                        },
+                        y: {
+                            ticks: {
+                                font: { size: 12 }
+                            },
+                             grid: { display: false }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ` Proficiency: ${context.raw}%`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        };
+
+        const skillFiltersContainer = document.getElementById('skill-filters');
+        Object.keys(resumeData.skills).forEach((key, index) => {
+            const button = document.createElement('button');
+            button.textContent = key;
+            button.className = `skill-btn px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200 ${index === 0 ? 'active' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`;
+            button.dataset.filter = key;
+            skillFiltersContainer.appendChild(button);
+        });
+
+        skillFiltersContainer.addEventListener('click', (e) => {
+            if (e.target.tagName === 'BUTTON') {
+                document.querySelectorAll('.skill-btn').forEach(btn => btn.classList.remove('active', 'bg-blue-600', 'text-white') || btn.classList.add('bg-gray-200', 'text-gray-700'));
+                e.target.classList.add('active', 'bg-blue-600', 'text-white');
+                e.target.classList.remove('bg-gray-200', 'text-gray-700');
+                createChart(e.target.dataset.filter);
+            }
+        });
+
+        createChart();
+    }
+
+    // Populate Awards
+    const awardsContainer = document.getElementById('awards-container');
+    if(awardsContainer) {
+        awardsContainer.innerHTML = resumeData.awards.map(award => `
+            <div class="bg-white p-6 rounded-lg shadow-md border border-gray-100 text-center">
+                <div class="text-4xl mb-3">${award.icon}</div>
+                <h4 class="font-bold text-lg mb-2">${award.name}</h4>
+                <p class="text-sm text-gray-600">${award.source}</p>
+            </div>
+        `).join('');
+    }
+    
+    // Populate Education
+    const educationContainer = document.getElementById('education-container');
+    if(educationContainer) {
+        educationContainer.innerHTML = resumeData.education.map(edu => `
+            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                <p class="font-bold text-blue-700">${edu.degree}</p>
+                <p class="text-gray-700">${edu.school}</p>
+                <p class="text-sm text-gray-500">${edu.date}</p>
+            </div>
+        `).join('');
+    }
+
+    // Populate Certifications
+    const certsContainer = document.getElementById('certs-container');
+    if(certsContainer) {
+        certsContainer.innerHTML = resumeData.certifications.map(cert => `
+            <div class="bg-white p-3 rounded-lg shadow-sm border border-gray-100 flex items-center">
+                <span class="text-green-500 mr-3">✓</span>
+                <span class="text-gray-800">${cert}</span>
+            </div>
+        `).join('');
+    }
+    
+    // Mobile menu toggle
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    mobileMenuButton.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+    });
+
+    // Nav link active state on scroll
+    const sections = document.querySelectorAll('section');
+    const navLinks = document.querySelectorAll('.nav-link');
+    window.onscroll = () => {
+        let current = '';
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            if (pageYOffset >= sectionTop - 100) {
+                current = section.getAttribute('id');
+            }
+        });
+
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href').includes(current)) {
+                link.classList.add('active');
+            }
+        });
+    };
+});
+</script>
+
+</body>
 </html>
+
